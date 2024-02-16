@@ -28,8 +28,15 @@ export class TaskService {
     return task;
   }
 
+  findByUserId(userId: number) {
+    const tasks = this.tasks.filter(
+      (task: TaskEntity) => task.userId === userId,
+    );
+    return tasks;
+  }
+
   update(id: number, updateTaskDto: UpdateTaskDto) {
-    const task = this.tasks.filter((task) => task.id === id);
+    const task = this.tasks.find((task) => task.id === id);
     const taskIndex = this.tasks.findIndex((task) => task.id === id);
 
     if (task.length === 0) {

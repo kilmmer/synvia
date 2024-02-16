@@ -1,45 +1,54 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Divider, Grid, TextField } from "@mui/material";
 import { TaskCard, Modal } from "../../components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Task, TaskStatus } from "../../types/task.type";
+import './dashboard.css'
+import { logout } from "../../services/auth.service";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-    const [tasks, setTasks] = useState<Array<Task>>([{
-        id: 1,
-        description: 'Task 1',
-        status: TaskStatus.TODO,
-        tags: [{name: 'urgent', type: 'warning'}, {name: 'important', type: 'error'}],
-        title: 'Task #1'
-    },
-    {
-        id: 2,
-        description: 'Task 2',
-        status: TaskStatus.TODO,
-        tags: [],
-        title: 'Task #2'
-    },
-    {
-        id: 3,
-        description: 'Task 3',
-        status: TaskStatus.TODO,
-        tags: [],
-        title: 'Task #3'
-    },
-    {
-        id: 4,
-        description: 'Task 4',
-        status: TaskStatus.TODO,
-        tags: [],
-        title: 'Task #4'
-    }]);
-
+    const [tasks, setTasks] = useState<Array<Task>>([]);
     const [showModal, setShowModal] = useState(false);
+    const [todoList, setTodoList] = useState<Array<Task>>([]);
+    const [inProgressList, setInProgressList] = useState<Array<Task>>([]);
+    const [doneList, setDoneList] = useState<Array<Task>>([]);
+    const navigate = useNavigate()
 
-    const todoList = tasks.filter((task) => task.status === TaskStatus.TODO);
-    const inProgressList = tasks.filter((task) => task.status === TaskStatus.IN_PROGRESS);
-    const doneList = tasks.filter((task) => task.status === TaskStatus.DONE);
-  
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+        if (!user || !token) {
+            logout()
+            navigate("/")
+            return;
+        }
+
+        
+        fetch('http://localhost:3000/api/v1/task', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'userId': user !== null ? JSON.parse(user).id : ''
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => setTasks(data));
+    }, [])
+
+    useEffect(() => {
+        const tasksTodo = tasks.filter((task) => task.status === TaskStatus.TODO);
+        setTodoList(tasksTodo);
+
+        const tasksInProgress = tasks.filter((task) => task.status === TaskStatus.IN_PROGRESS)
+        setInProgressList(tasksInProgress);
+
+        const tasksDone = tasks.filter((task) => task.status === TaskStatus.DONE)
+        setDoneList(tasksDone);
+    }, [])
+
     const handleMove = ( to: TaskStatus, id: number) => {
         const newTasks: Task[] = tasks.map((task: Task) => {
             if (task.id === id) {

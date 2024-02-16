@@ -1,14 +1,16 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "../pages/dashboard/dashboard";
 import Login from "../pages/login/login";
-import Signup from "../pages/signup/signup";
+import Register from "../pages/register/register";
+
 
 
 const routes = createBrowserRouter([
     {
         id: "home",
         path: "/",
-        Component: Dashboard
+        Component: Dashboard,
+        index: true
     },
     {
         path: '/dashboard',
@@ -18,12 +20,12 @@ const routes = createBrowserRouter([
     {
         path: '/login',
         id: 'login',
-        Component: Login
+        Component: Login,        
     },
     {
-        path: '/signup',
-        id: 'signup',
-        Component: Signup
+        path: '/register',
+        id: 'register',
+        Component: Register
     }
 ])
 

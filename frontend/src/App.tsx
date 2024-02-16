@@ -7,21 +7,32 @@ import Footer from "./components/footer/footer"
 // import Signup from "./pages/signup/signup"
 import { routes } from "./routes"
 import { Container } from "@mui/material"
+import { Context } from "./context/context"
+
 
 const App = () => {
-  const [username, setUsername] = useState('')
+  const [user, setUser] = useState({})
+
   
   useEffect(() => {
     const getUser = localStorage.getItem('user')
-    
+
     if(getUser !== null){
-      setUsername(JSON.parse(getUser))
+      const user = JSON.parse(getUser)
+      console.log(user)
+      
+      setUser(user.name)
     } else {
       routes.navigate('/login')
       // navigate('/login')
     }
-  }, [username])
 
+    console.log(user)
+
+    
+  }, [user])
+
+  
   return (
     // <BrowserRouter>
     //   <Routes>
@@ -31,12 +42,14 @@ const App = () => {
     //   </Routes>
     // </BrowserRouter>
     <>
-      <Header user={username}/>
-      <Container maxWidth="xl">
-        <RouterProvider router={routes} />
-      </Container>
-      
-      <Footer />
+      <Context.Provider value={{user, setUser}}>
+        <Header />
+        <Container maxWidth="xl">
+          <RouterProvider router={routes} />
+        </Container>
+        
+        <Footer />
+      </Context.Provider>
     </>
   )
 }
