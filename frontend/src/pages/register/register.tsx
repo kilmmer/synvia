@@ -20,7 +20,7 @@ const defaultTheme = createTheme();
 
 export default function Register() {
   const navigate = useNavigate();
-  const { setUser } = useContext(Context)
+  const { context, setContext } = useContext(Context)
   const [requestError, setRequestError] = useState<boolean>(false)
   const [registerResult, setRegisterResult] = useState<any>()
 
@@ -50,7 +50,7 @@ export default function Register() {
     
     localStorage.setItem('access_token', result.access_token);
     localStorage.setItem('user', JSON.stringify(result));
-    setUser(result)
+    setContext({...context, user:result, isLoggetIn: true})
     navigate("/dashboard")
   };
 

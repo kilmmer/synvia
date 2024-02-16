@@ -2,15 +2,18 @@ import { Close } from "@mui/icons-material"
 import { Alert, Box, Button, Collapse, FormControl, Grid, IconButton, Input, InputLabel } from "@mui/material"
 import { useContext, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { login } from "../../services/auth.service"
+import { login, refreshToken } from "../../services/auth.service"
 import { Context } from "../../context/context"
+
 
 const Login = () => {
     const navigate = useNavigate()
     const [formError, setFormError] = useState<boolean>(false)
     const [requestError, setRequestError] = useState<boolean>(false)
     const [loginError, setLoginError] = useState()
-    const { setUser } = useContext(Context)
+    
+    const { setContext } = useContext(Context)
+
 
     const handleLogin = async ( event: React.FormEvent<HTMLFormElement> ) => {
         event.preventDefault()
@@ -31,15 +34,18 @@ const Login = () => {
             setRequestError(true)
             setLoginError(loginResult)
             return false
+        } else {
+            localStorage.setItem('access_token', loginResult.access_token)
+            localStorage.setItem('user', JSON.stringify(loginResult))
+    
+            setContext({user: loginResult, isLoggedIn: true})
+            
+            refreshToken()
+            
+            navigate('/dashboard')
         }
 
 
-        localStorage.setItem('access_token', loginResult.access_token)
-        localStorage.setItem('user', loginResult.access_token)
-
-        setUser(loginResult)
-        
-        navigate('/dashboard')
 
         return false
     }

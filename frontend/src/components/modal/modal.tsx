@@ -33,7 +33,7 @@ const Modal = (props: { title: string, description: string, children: React.Reac
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={closeModal}>Cancel</Button>
-                    <Button type="submit">Create</Button>
+                    <Button type="submit" onClick={handleData}>Create</Button>
                 </DialogActions>
             </Dialog>
         </>

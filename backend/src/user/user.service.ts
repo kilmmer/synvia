@@ -29,12 +29,8 @@ export class UserService {
     return this.users;
   }
 
-  findOne(id: number) {
+  findOne(id: number): User {
     const find = this.users.find((user) => user.id === id);
-
-    if (!find) {
-      return new Error('User not found');
-    }
 
     return find;
   }

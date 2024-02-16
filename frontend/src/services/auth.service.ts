@@ -1,4 +1,9 @@
+import { useContext } from "react";
+import { Context } from "../context/context";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
+let interval: any;
+
 const login = async (email: string, password: string) => {
     const res = await fetch('http://localhost:3000/api/v1/auth/login',
     {
@@ -11,7 +16,7 @@ const login = async (email: string, password: string) => {
             password
         })
     }).then(res => res.json()).then((data) => {
-        console.log(data)
+        
         return data
     })
 
@@ -22,6 +27,29 @@ const logout = () => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('user')
     
+    clearInterval(interval)
+}
+
+const refreshToken = async () => {
+    interval = setInterval(async () => {
+        console.log('refreshToken called')
+        const user = localStorage.getItem('user');
+    
+        if(user !== null){
+            await fetch('http://localhost:3000/api/v1/auth/refresh',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    refreshToken: user['refreshToken']
+                })
+            }).then(res => res.json()).then((data) => {
+                return data
+            })
+        }
+    }, 60 * 1000)
 }
 
 const register = async (data: any) => {
@@ -42,5 +70,6 @@ const register = async (data: any) => {
 export {
   login,
   logout,
-  register
+  register,
+  refreshToken
 }

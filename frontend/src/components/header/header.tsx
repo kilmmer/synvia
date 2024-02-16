@@ -10,18 +10,18 @@ import { logout } from "../../services/auth.service";
 
 
 const Header = () => {
-  const {user} = useContext(Context)
-  
+  const {context, setContext } = useContext(Context)
+  console.log(context)
   return (
     <AppBar position="relative" color="transparent" style={{ backgroundColor: "var(--header-bg-color)", marginBottom: 30 }}>
       <Container maxWidth="lg" className="header">
         <h1>Synvia Task Manager</h1>
         
-          { user &&
+          { context.isLoggedIn &&
               (<div style={{ display: "flex", alignItems: "center", gap: 15 }}>
               <AccountCircleOutlined style={{ fontSize: 32 }} />
-              <p>{user.name}</p>
-              <Button variant="text" sx={{backgroundColor: "var(--header-bg-color)"}} color="inherit" onClick={() => {logout(); window.location.reload()}}><ExitToApp style={{ fontSize: 32 }} /></Button>
+              <p>{context?.user.name}</p>
+              <Button variant="text" sx={{backgroundColor: "var(--header-bg-color)"}} color="inherit" onClick={() => {logout(); setContext(null)}}><ExitToApp style={{ fontSize: 32 }} /></Button>
             </div>)
           }
     

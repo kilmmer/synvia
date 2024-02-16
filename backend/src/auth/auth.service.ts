@@ -13,7 +13,7 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<any> {
     const user = this.userService.findByEmail(email);
-
+    console.log(user);
     if (!user) {
       return {
         message: 'User or password incorrect',
@@ -28,6 +28,8 @@ export class AuthService {
       };
     }
 
+    delete user.password;
+
     return { ...user, ...this.generateToken(user) };
   }
 
@@ -41,9 +43,24 @@ export class AuthService {
     }
     const newUser = this.userService.create(user);
 
+    delete newUser.password;
+
     return {
       ...newUser,
-      access_token: this.generateToken(newUser).access_token,
+      ...this.generateToken(newUser),
+    };
+  }
+
+  refresh(token: string) {
+    const decodedToken = this.jwtService.decode(token);
+
+    const user = this.userService.findOne(decodedToken.sub);
+
+    delete user.password;
+
+    return {
+      ...user,
+      ...this.generateToken(user),
     };
   }
 
@@ -52,6 +69,9 @@ export class AuthService {
 
     return {
       access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(payload, {
+        expiresIn: '300s',
+      }),
     };
   }
 }

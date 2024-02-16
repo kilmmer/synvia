@@ -11,7 +11,8 @@ import { Context } from "./context/context"
 
 
 const App = () => {
-  const [user, setUser] = useState({})
+  const [context, setContext] = useState({})
+  
 
   
   useEffect(() => {
@@ -19,18 +20,14 @@ const App = () => {
 
     if(getUser !== null){
       const user = JSON.parse(getUser)
-      console.log(user)
       
-      setUser(user.name)
+      setContext({user: user, isLoggedIn: true})
     } else {
       routes.navigate('/login')
-      // navigate('/login')
+     
     }
-
-    console.log(user)
-
     
-  }, [user])
+  }, [])
 
   
   return (
@@ -42,7 +39,7 @@ const App = () => {
     //   </Routes>
     // </BrowserRouter>
     <>
-      <Context.Provider value={{user, setUser}}>
+      <Context.Provider value={{context, setContext}}>
         <Header />
         <Container maxWidth="xl">
           <RouterProvider router={routes} />

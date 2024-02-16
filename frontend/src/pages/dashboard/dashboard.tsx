@@ -6,6 +6,7 @@ import { Task, TaskStatus } from "../../types/task.type";
 import './dashboard.css'
 import { logout } from "../../services/auth.service";
 import { useNavigate } from "react-router-dom";
+import { newTask } from "../../services/task.service";
 
 const Dashboard = () => {
     const [tasks, setTasks] = useState<Array<Task>>([]);
@@ -17,10 +18,10 @@ const Dashboard = () => {
 
     useEffect(() => {
         const user = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('access_token');
         if (!user || !token) {
             logout()
-            navigate("/")
+            navigate("/login")
             return;
         }
 
@@ -30,7 +31,7 @@ const Dashboard = () => {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
                 'userId': user !== null ? JSON.parse(user).id : ''
             },
         })
@@ -66,6 +67,7 @@ const Dashboard = () => {
 
     const handleData = (data: any) => {
         console.log(data);
+        newTask(data)
     }
 
     return (
