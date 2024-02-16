@@ -35,4 +35,4 @@ pelos campos das tags.
 
 ### Desenvolvimento
 
-<div>Estou desenvolvendo o backend utilizando o Node.js e o NestJS, no frontend utilizei o React.</div>
+Estou desenvolvendo o backend utilizando o Node.js e o NestJS, no frontend utilizei o React.

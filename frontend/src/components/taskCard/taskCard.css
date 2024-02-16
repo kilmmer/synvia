@@ -1,0 +1,11 @@
+.taskCard:hover {
+    cursor: grab;
+}
+
+.taskCard:active {
+    cursor: grabbing;
+}
+
+.taskCard.dragging {
+    opacity: 0.8;
+}

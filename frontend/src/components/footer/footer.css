@@ -1,0 +1,11 @@
+.footer {
+    background-color: var(--header-bg-color) !important;
+    color: #fff;
+    position: relative !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 50px !important;
+    text-align: center;
+    line-height: 50px;
+
+}
