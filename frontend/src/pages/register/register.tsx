@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {useContext, useState} from 'react';
+import {useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,14 +13,14 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Alert, Collapse, FormControl, IconButton, InputLabel, MenuItem, Select } from '@mui/material';
 import { register } from "../../services/auth.service"
 import { useNavigate } from 'react-router-dom';
-import { Context } from '../../context/context';
+// import { Context } from '../../context/context';
 import { Close } from '@mui/icons-material';
 
 const defaultTheme = createTheme();
 
 export default function Register() {
   const navigate = useNavigate();
-  const { context, setContext } = useContext(Context)
+  // const { context, setContext } = useContext(Context)
   const [requestError, setRequestError] = useState<boolean>(false)
   const [registerResult, setRegisterResult] = useState<any>()
 
@@ -50,7 +50,7 @@ export default function Register() {
     
     localStorage.setItem('access_token', result.access_token);
     localStorage.setItem('user', JSON.stringify(result));
-    setContext({...context, user:result, isLoggetIn: true})
+    // setContext({...context, user:result, isLoggetIn: true})
     navigate("/dashboard")
   };
 
@@ -67,7 +67,7 @@ export default function Register() {
                         color="inherit"
                         size="small"
                         onClick={() => {
-                            setRequestError(false);
+                          setRequestError(false);
                         }}
                         >
                         <Close fontSize="inherit" />

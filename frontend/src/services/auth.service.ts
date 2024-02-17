@@ -1,6 +1,3 @@
-import { useContext } from "react";
-import { Context } from "../context/context";
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let interval: any;
 
@@ -16,7 +13,7 @@ const login = async (email: string, password: string) => {
             password
         })
     }).then(res => res.json()).then((data) => {
-        
+        refreshToken()
         return data
     })
 
@@ -36,7 +33,7 @@ const refreshToken = async () => {
         const user = localStorage.getItem('user');
     
         if(user !== null){
-            await fetch('http://localhost:3000/api/v1/auth/refresh',
+            await fetch('http://localhost:3000/api/v1/auth/refresh-token',
             {
                 method: 'POST',
                 headers: {
@@ -49,7 +46,7 @@ const refreshToken = async () => {
                 return data
             })
         }
-    }, 60 * 1000)
+    }, 5 * 1000)
 }
 
 const register = async (data: any) => {
@@ -60,6 +57,7 @@ const register = async (data: any) => {
         },
         body: JSON.stringify(data)
     }).then(res => res.json()).then((data) => {
+        refreshToken()
         return data
     })
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Divider, Grid, TextField } from "@mui/material";
+import { Autocomplete, Box, Button, Chip, Divider, Grid, TextField } from "@mui/material";
 import { TaskCard, Modal } from "../../components";
 import { useEffect, useState } from "react";
 import { Task, TaskStatus } from "../../types/task.type";
@@ -7,6 +7,7 @@ import './dashboard.css'
 import { logout } from "../../services/auth.service";
 import { useNavigate } from "react-router-dom";
 import { newTask } from "../../services/task.service";
+import { get } from "../../services/localstorage.service";
 
 const Dashboard = () => {
     const [tasks, setTasks] = useState<Array<Task>>([]);
@@ -14,6 +15,7 @@ const Dashboard = () => {
     const [todoList, setTodoList] = useState<Array<Task>>([]);
     const [inProgressList, setInProgressList] = useState<Array<Task>>([]);
     const [doneList, setDoneList] = useState<Array<Task>>([]);
+    const [ users, setUsers ] = useState([])
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -24,7 +26,6 @@ const Dashboard = () => {
             navigate("/login")
             return;
         }
-
         
         fetch('http://localhost:3000/api/v1/task', {
             method: 'GET',
@@ -37,6 +38,20 @@ const Dashboard = () => {
         })
             .then((response) => response.json())
             .then((data) => setTasks(data));
+            
+        fetch('http://localhost:3000/api/v1/user', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer '+get('access_token')
+            }
+        }).then(r => r.json())
+        .then(res => {
+            if(res.message){
+                return false;
+            }
+            res.map(user => {return {label: user.name, id: user.id}})
+            setUsers(res)
+        })
     }, [])
 
     useEffect(() => {
@@ -68,7 +83,9 @@ const Dashboard = () => {
     const handleData = (data: any) => {
         console.log(data);
         newTask(data)
+        todoList.push(data)
     }
+
 
     return (
         <>
@@ -78,55 +95,89 @@ const Dashboard = () => {
                         <Button variant="contained" color="primary" centerRipple onClick={() => setShowModal(true)}>Add Task</Button>
                     </div>
 
-                    {showModal && <Modal title="Create new task" description={''} isOpen={showModal} closeModal={() => setShowModal(false)} handleData={handleData}>
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="title"
-                        name="title"
-                        label="Title"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                    />
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="description"
-                        name="description"
-                        label="Description"
-                        type="text"
-                        fullWidth
-                        multiline
-                        rows={4}
-                        variant="standard"
-                    />
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="Tags"
-                        name="tags"
-                        label="Tags"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                    />
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="user"
-                        name="user"
-                        label="Task for"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                    />
-                    </Modal>}
-                    
+                    {showModal && 
+                    <Modal title="Create new task" description={''} isOpen={showModal} closeModal={() => setShowModal(false)}  handleData={handleData}>
+                        <Box>
+                            <TextField
+                                autoFocus
+                                required
+                                margin="dense"
+                                id="title"
+                                name="title"
+                                label="Title"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                            />
+                            <TextField
+                                autoFocus
+                                required
+                                margin="dense"
+                                id="description"
+                                name="description"
+                                label="Description"
+                                type="text"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                variant="standard"
+                                style={{marginTop: 2}}
+                            />
+                            {/* <TextField
+                                
+                                required
+                                margin="dense"
+                                id="Tags"
+                                name="tags"
+                                label="Tags"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                            /> */}
+                            <Autocomplete
+                                multiple
+                                id="tags-standard"
+                                options={[]}
+                                
+                                freeSolo
+                                style={{marginTop: 2}}
+                                renderTags={(value: readonly string[], getTagProps) =>
+                                value.map((option: string, index: number) => (
+                                    <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                                ))
+                                }
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        variant="standard"
+                                        label="Tags"
+                                        name="tags"
+                                        placeholder="Tags"
+                                    />
+                                )}
+                            />
+                            {/* <TextField
+                                autoFocus
+                                required
+                                margin="dense"
+                                id="user"
+                                name="user"
+                                label="Task for"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                            /> */}
+                            <Autocomplete
+                                disablePortal
+                                id="combo-box-demo"
+                                options={users.map(user => {return {label: user.name, id: user.id}})}
+                                sx={{ width: '100%' }}
+                                
+                                renderInput={(params) => {console.log(params); return <TextField {...params} variant="standard" name="user" style={{marginTop: 5, width: "100%"}} label="Users" />}}
+                                />
+                        </Box>
+                    </Modal>
+                    }
                 </Grid>
             </Grid>
 

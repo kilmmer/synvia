@@ -1,9 +1,10 @@
 import { Close } from "@mui/icons-material"
 import { Alert, Box, Button, Collapse, FormControl, Grid, IconButton, Input, InputLabel } from "@mui/material"
-import { useContext, useState } from "react"
+import {  useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { login, refreshToken } from "../../services/auth.service"
-import { Context } from "../../context/context"
+import { set } from "../../services/localstorage.service"
+// import { Context } from "../../context/context"
 
 
 const Login = () => {
@@ -12,7 +13,7 @@ const Login = () => {
     const [requestError, setRequestError] = useState<boolean>(false)
     const [loginError, setLoginError] = useState()
     
-    const { setContext } = useContext(Context)
+    // const { setContext } = useContext(Context)
 
 
     const handleLogin = async ( event: React.FormEvent<HTMLFormElement> ) => {
@@ -35,17 +36,16 @@ const Login = () => {
             setLoginError(loginResult)
             return false
         } else {
-            localStorage.setItem('access_token', loginResult.access_token)
-            localStorage.setItem('user', JSON.stringify(loginResult))
+            set('access_token', loginResult.access_token)
+            set('user', JSON.stringify(loginResult))
+            set('isLoggedIn', 'true')
     
-            setContext({user: loginResult, isLoggedIn: true})
+            // setContext({user: loginResult, isLoggedIn: true})
             
             refreshToken()
             
             navigate('/dashboard')
         }
-
-
 
         return false
     }
@@ -109,7 +109,7 @@ const Login = () => {
                         </FormControl>
                         <FormControl fullWidth>
                             <InputLabel htmlFor="name">Password</InputLabel>
-                            <Input id="password" name="password" type="password" placeholder="Enter your password" autoFocus margin="dense" style={ { width: '100%', marginBottom: '20px' }}/>
+                            <Input id="password" name="password" type="password" placeholder="Enter your password" margin="dense" style={ { width: '100%', marginBottom: '20px' }}/>
                         </FormControl>
                         <div style={ { marginBottom: '20px' }}>
                             <Button type="submit" variant="contained" color="primary" style={ { width: '100%' }}>Login</Button>

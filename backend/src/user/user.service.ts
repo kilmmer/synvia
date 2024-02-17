@@ -6,67 +6,63 @@ import { createHash } from 'crypto';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [];
+    private users: User[] = [];
 
-  create(createUserDto: CreateUserDto) {
-    const id = this.users.length > 0 ? this.users.length + 1 : 1;
+    create(createUserDto: CreateUserDto) {
+        const id = this.users.length > 0 ? this.users.length + 1 : 1;
 
-    createUserDto.password = createHash('sha256')
-      .update(createUserDto.password)
-      .digest('hex');
+        createUserDto.password = createHash('sha256').update(createUserDto.password).digest('hex');
 
-    const newUser: User = {
-      id: id,
-      ...createUserDto,
-      createdAt: new Date(),
-    };
+        const newUser: User = {
+            id: id,
+            ...createUserDto,
+            createdAt: new Date(),
+        };
 
-    this.users.push(newUser);
-    return newUser;
-  }
-
-  findAll() {
-    return this.users;
-  }
-
-  findOne(id: number): User {
-    const find = this.users.find((user) => user.id === id);
-
-    return find;
-  }
-
-  findByEmail(email: string) {
-    const find = this.users.find((user) => user.email === email);
-
-    return find;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    updateUserDto.updatedAt = new Date();
-
-    if (updateUserDto.password) {
-      updateUserDto.password = createHash('sha256')
-        .update(updateUserDto.password)
-        .digest('hex');
+        this.users.push(newUser);
+        return newUser;
     }
 
-    this.users.map((user) => {
-      if (user.id === id) {
-        return {
-          ...user,
-          ...updateUserDto,
-        };
-      }
+    findAll() {
+        return this.users;
+    }
 
-      return user;
-    });
+    findOne(id: number): User {
+        const find = this.users.find((user) => user.id === id);
 
-    return updateUserDto;
-  }
+        return find;
+    }
 
-  remove(id: number) {
-    this.users.filter((user) => user.id !== id);
+    findByEmail(email: string) {
+        const find = this.users.find((user) => user.email === email);
 
-    return 'User deleted';
-  }
+        return find;
+    }
+
+    update(id: number, updateUserDto: UpdateUserDto) {
+        updateUserDto.updatedAt = new Date();
+
+        if (updateUserDto.password) {
+            updateUserDto.password = createHash('sha256').update(updateUserDto.password).digest('hex');
+        }
+
+        this.users.map((user) => {
+            if (user.id === id) {
+                return {
+                    ...user,
+                    ...updateUserDto,
+                };
+            }
+
+            return user;
+        });
+
+        return updateUserDto;
+    }
+
+    remove(id: number) {
+        this.users.filter((user) => user.id !== id);
+
+        return 'User deleted';
+    }
 }

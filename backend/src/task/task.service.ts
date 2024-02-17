@@ -5,55 +5,53 @@ import { TaskEntity } from './entities/task.entity';
 
 @Injectable()
 export class TaskService {
-  private tasks = [];
+    private task = [];
 
-  create(createTaskDto: CreateTaskDto) {
-    if (this.tasks.length === 0) {
-      createTaskDto.id = 1;
-    } else {
-      createTaskDto.id = this.tasks[this.tasks.length - 1]?.id + 1;
-    }
-    createTaskDto.createdAt = new Date();
-    this.tasks.push(createTaskDto);
+    create(createTaskDto: CreateTaskDto) {
+        if (this.task.length === 0) {
+            createTaskDto.id = 1;
+        } else {
+            createTaskDto.id = this.task[this.task.length - 1]?.id + 1;
+        }
+        createTaskDto.createdAt = new Date();
+        this.task.push(createTaskDto);
 
-    return createTaskDto;
-  }
-
-  findAll() {
-    return this.tasks;
-  }
-
-  findOne(id: number) {
-    const task = this.tasks.find((task: TaskEntity) => task.id === id);
-    return task;
-  }
-
-  findByUserId(userId: number) {
-    const tasks = this.tasks.filter(
-      (task: TaskEntity) => task.userId === userId,
-    );
-    return tasks;
-  }
-
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    const task = this.tasks.find((task) => task.id === id);
-    const taskIndex = this.tasks.findIndex((task) => task.id === id);
-
-    if (task.length === 0) {
-      return null;
+        return createTaskDto;
     }
 
-    this.tasks[taskIndex] = {
-      ...this.tasks[taskIndex],
-      ...updateTaskDto,
-    };
+    findAll() {
+        return this.task;
+    }
 
-    return this.tasks[taskIndex];
-  }
+    findOne(id: number) {
+        const task = this.task.find((task: TaskEntity) => task.id === id);
+        return task;
+    }
 
-  remove(id: number) {
-    const index = this.tasks.findIndex((task) => task.id === id);
-    this.tasks.splice(index, 1);
-    return this.tasks;
-  }
+    findByUserId(userId: number) {
+        const tasks = this.task.filter((task: TaskEntity) => task.userId === userId);
+        return tasks;
+    }
+
+    update(id: number, updateTaskDto: UpdateTaskDto) {
+        const task = this.task.find((task) => task.id === id);
+        const taskIndex = this.task.findIndex((task) => task.id === id);
+
+        if (task.length === 0) {
+            return null;
+        }
+
+        this.task[taskIndex] = {
+            ...this.task[taskIndex],
+            ...updateTaskDto,
+        };
+
+        return this.task[taskIndex];
+    }
+
+    remove(id: number) {
+        const index = this.task.findIndex((task) => task.id === id);
+        this.task.splice(index, 1);
+        return this.task;
+    }
 }

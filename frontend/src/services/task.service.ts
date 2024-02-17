@@ -1,4 +1,6 @@
 import { Task } from "../types/task.type";
+import { get } from "./localstorage.service";
+
 
 const newTask = async (task: Task) =>{
     
@@ -6,7 +8,8 @@ const newTask = async (task: Task) =>{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+localStorage.getItem('access_token')
+            'Authorization': 'Bearer '+localStorage.getItem('access_token'),
+            'userId': get('user').id
         },
         body: JSON.stringify(task)
     }).then(r => r.json())
