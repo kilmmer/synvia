@@ -47,7 +47,7 @@ export class AuthController {
 
         if (refresh_token === undefined) return new HttpException('Refresh token is required', HttpStatus.BAD_REQUEST);
 
-        const refresh = this.authService.refresh(refresh_token);
+        const refresh = await this.authService.refresh(refresh_token);
 
         if (!refresh || refresh['message']) {
             throw new HttpException(refresh['message'], HttpStatus.BAD_REQUEST);

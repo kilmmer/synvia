@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpStatus, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 
@@ -8,7 +8,13 @@ export class UserController {
 
     @Get()
     @UseGuards(AuthGuard)
-    getAll() {
-        return this.userService.findAll();
+    async getAll() {
+        const users = await this.userService.findAll();
+
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Query successful',
+            data: users,
+        };
     }
 }

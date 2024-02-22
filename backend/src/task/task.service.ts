@@ -39,12 +39,19 @@ export class TaskService {
         return result.rows;
     }
 
-    async update(id: number, updateTaskDto: UpdateTaskDto) {
-        const result = await this.db.query(`UPDATE tasks SET title = $1, description = $2 WHERE id = $3 RETURNING *`, [
-            updateTaskDto.title,
-            updateTaskDto.description,
+    async update(id: number, updateTaskDto: Partial<UpdateTaskDto>) {
+        const objKeys = Object.keys(updateTaskDto);
+        const objValues = Object.values(updateTaskDto);
+        const query = objKeys.map((key, index) => `${key} = $${index + 1}`);
+
+        console.log(`UPDATE tasks SET ${query} WHERE id = $${objKeys.length + 1} RETURNING *`, [...objValues, id]);
+
+        const result = await this.db.query(`UPDATE tasks SET ${query} WHERE id = $${objKeys.length + 1} RETURNING *`, [
+            ...objValues,
             id,
         ]);
+
+        // console.log(result.rows[0]);
         return result.rows[0];
     }
 

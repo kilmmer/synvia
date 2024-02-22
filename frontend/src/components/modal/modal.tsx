@@ -4,8 +4,6 @@ import './modal.css'
 
 const Modal = (props: { title: string, description: string, children: React.ReactNode, isOpen: boolean, closeModal: () => void, handleData: (data: any) => void }) => {
     const { title, description, children, isOpen, closeModal, handleData } = props
-    
-    
 
     return (
         <>
@@ -29,11 +27,12 @@ const Modal = (props: { title: string, description: string, children: React.Reac
                     <DialogContentText>
                         {description}
                     </DialogContentText>
+                    
                     {children}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={closeModal}>Cancel</Button>
-                    <Button type="submit" onClick={handleData}>Create</Button>
+                    <Button type="submit" onClick={handleData}>{title.match(/Create/) ? 'Create' : 'Update'} task</Button>
                 </DialogActions>
             </Dialog>
         </>

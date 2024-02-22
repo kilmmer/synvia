@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpStatus, Put } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -17,10 +17,11 @@ export class TaskController {
 
     @Get()
     async findAll() {
+        const tasks = await this.taskService.findAll();
         return {
             statusCode: HttpStatus.OK,
             message: 'Success',
-            data: await this.taskService.findAll(),
+            data: tasks,
         };
     }
 
@@ -43,7 +44,7 @@ export class TaskController {
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
+    async update(@Param('id') id: string, @Body() updateTaskDto: Partial<UpdateTaskDto>) {
         return {
             statusCode: HttpStatus.OK,
             message: 'Success',
@@ -60,21 +61,30 @@ export class TaskController {
         };
     }
 
-    @Patch(':id/done')
+    @Put(':id/done')
     async done(@Param('id') id: string) {
         return {
             statusCode: HttpStatus.OK,
             message: 'Success',
-            data: await this.taskService.update(+id, { status: TaskStatus.DONE }),
+            data: await this.taskService.update(+id, { status: TaskStatus.DONE, updatedAt: new Date() }),
         };
     }
 
-    @Patch(':id/in-progress')
+    @Put(':id/in-progress')
     async inProgress(@Param('id') id: string) {
         return {
             statusCode: HttpStatus.OK,
             message: 'Success',
-            data: await this.taskService.update(+id, { status: TaskStatus.IN_PROGRESS }),
+            data: await this.taskService.update(+id, { status: TaskStatus.IN_PROGRESS, updatedAt: new Date() }),
+        };
+    }
+
+    @Put(':id/todo')
+    async todo(@Param('id') id: string) {
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Success',
+            data: await this.taskService.update(+id, { status: TaskStatus.TODO, updatedAt: new Date() }),
         };
     }
 }

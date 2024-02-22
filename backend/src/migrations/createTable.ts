@@ -30,7 +30,7 @@ const createTable = async () => {
             title TEXT NOT NULL,
             description TEXT,
             tags TEXT,
-            status VARCHAR(100) NOT NULL,
+            status TEXT NOT NULL,
             userId INTEGER,
             createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
             updatedAt TIMESTAMP NOT NULL DEFAULT NOW(),

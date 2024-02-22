@@ -1,4 +1,4 @@
-import { get, remove } from "./storage.service";
+import { get, remove, set } from "./storage.service";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let interval: any;
@@ -35,7 +35,7 @@ const logout = () => {
     
 }
 
-const refreshToken = async () => {    
+const refreshToken = () => {    
     interval = setInterval(async () => {
        
         const user = get('user');
@@ -53,18 +53,23 @@ const refreshToken = async () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    refresh_token: JSON.parse(userDecoded)['refresh_token']
+                    refresh_token: userDecoded['refresh_token']
                 })
             }).then(res => res.json()).then((response) => {
                 console.log(response)
                 if(response.statusCode === 200){
+                    set('isLoggedIn', true)
+                    set('user', JSON.stringify(response.data))
+                    set('access_token', response.data.access_token)
                     return response.data
                 } else {
+                    logout()
+                    window.location.reload()
                     return response
                 }
             })
         }
-    }, 5 * 1000)
+    }, 14 * 1000)
 }
 
 const register = async (data: any) => {
