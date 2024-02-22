@@ -38,8 +38,6 @@ export default function Register() {
       role: data.get('role')
     };
 
-    console.log(formData)
-
     const result = await register(formData);
     
     if(!result || result.access_token === undefined){

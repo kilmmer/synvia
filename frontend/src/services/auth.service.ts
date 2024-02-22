@@ -37,14 +37,13 @@ const logout = () => {
 
 const refreshToken = async () => {    
     interval = setInterval(async () => {
-        console.log('refreshToken called')
+       
         const user = get('user');
         let userDecoded: any;
         
         if(user !== null){
             userDecoded = JSON.parse(user)
         }
-        console.log(JSON.parse(userDecoded))
     
         if(user !== null){
             await fetch('http://localhost:3000/api/v1/auth/refresh-token',

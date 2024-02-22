@@ -26,7 +26,6 @@ export class TaskService {
 
     async findAll() {
         const result = await this.db.query('SELECT * FROM tasks');
-        console.log(result.rows);
         return result.rows;
     }
 
