@@ -5,14 +5,14 @@ import './modal.css'
 const Modal = (props: { title: string, description: string, children: React.ReactNode, isOpen: boolean, closeModal: () => void, handleData: (data: any) => void }) => {
     const { title, description, children, isOpen, closeModal, handleData } = props
     
-    const handleModalContainerClick = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
+    
 
     return (
         <>
             <Dialog
                 open={isOpen}
                 onClose={closeModal}
-                onClick={handleModalContainerClick}
+                
                 PaperProps={{
                 component: 'form',
                     onSubmit: (event: React.FormEvent<HTMLFormElement>) => {

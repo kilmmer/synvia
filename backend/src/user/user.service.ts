@@ -3,66 +3,69 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { createHash } from 'crypto';
+import { InjectClient } from 'nest-postgres';
+import { Client } from 'pg';
 
 @Injectable()
 export class UserService {
     private users: User[] = [];
 
-    create(createUserDto: CreateUserDto) {
-        const id = this.users.length > 0 ? this.users.length + 1 : 1;
+    constructor(@InjectClient() private readonly db: Client) {}
 
+    async create(createUserDto: CreateUserDto) {
         createUserDto.password = createHash('sha256').update(createUserDto.password).digest('hex');
 
-        const newUser: User = {
-            id: id,
-            ...createUserDto,
-            createdAt: new Date(),
-        };
+        const result = await this.db.query(
+            'INSERT INTO users (name, email, password, role, createdAt) VALUES ($1, $2, $3, $4, now()) RETURNING *',
+            [createUserDto.name, createUserDto.email, createUserDto.password, createUserDto.role ?? 'user'],
+        );
 
-        this.users.push(newUser);
-        return newUser;
+        return result.rows[0];
     }
 
-    findAll() {
-        return this.users;
+    async findAll() {
+        const result = await this.db.query('SELECT * FROM users');
+
+        return result.rows;
     }
 
-    findOne(id: number): User {
-        const find = this.users.find((user) => user.id === id);
+    async findOne(id: number): Promise<any> {
+        const result = await this.db.query('SELECT * FROM users WHERE id = $1', [id]);
 
-        return find;
+        return result.rows[0];
     }
 
-    findByEmail(email: string) {
-        const find = this.users.find((user) => user.email === email);
+    async findByEmail(email: string) {
+        const result = await this.db.query('SELECT * FROM users WHERE email = $1', [email]);
 
-        return find;
+        return result.rows[0];
     }
 
-    update(id: number, updateUserDto: UpdateUserDto) {
+    async update(id: number, updateUserDto: UpdateUserDto) {
         updateUserDto.updatedAt = new Date();
 
         if (updateUserDto.password) {
             updateUserDto.password = createHash('sha256').update(updateUserDto.password).digest('hex');
         }
 
-        this.users.map((user) => {
-            if (user.id === id) {
-                return {
-                    ...user,
-                    ...updateUserDto,
-                };
-            }
+        const result = await this.db.query(
+            'UPDATE users SET name = $1, email = $2, password = $3, role = $4, updatedAt = $5 WHERE id = $6 RETURNING *',
+            [
+                updateUserDto.name,
+                updateUserDto.email,
+                updateUserDto.password,
+                updateUserDto.role,
+                updateUserDto.updatedAt,
+                id,
+            ],
+        );
 
-            return user;
-        });
-
-        return updateUserDto;
+        return result.rows[0];
     }
 
-    remove(id: number) {
-        this.users.filter((user) => user.id !== id);
+    async remove(id: number) {
+        const result = await this.db.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
 
-        return 'User deleted';
+        return result.rows[0];
     }
 }

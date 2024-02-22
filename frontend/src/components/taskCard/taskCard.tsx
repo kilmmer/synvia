@@ -25,12 +25,12 @@ const TaskCard = (props: {title: string, description: string, status: string, ta
                     {status}
                 </Typography>
                 <Divider />
-                {tags.length > 0 && 
+                {/* {tags.length > 0 && 
                 <Typography variant="subtitle2" component="div">
                     {tags.map((tag: any, index: number) => {
                         return <Chip label={tag['name']} size={'small'} color={tag['type']} key={'chip_key_'+index} sx={{marginRight: 1, marginTop: 2}}/>
                     })}
-                </Typography>}
+                </Typography>} */}
             </CardContent>
             <Divider />
             {status === "todo" &&<CardActions sx={{ justifyContent: 'space-between', alignItems: 'center' }} style={{padding: '0px 16px 8px 16px'}}>

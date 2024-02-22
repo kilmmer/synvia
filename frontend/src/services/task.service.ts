@@ -1,5 +1,5 @@
 import { Task } from "../types/task.type";
-import { get } from "./localstorage.service";
+import { get } from "./storage.service";
 
 
 const newTask = async (task: Task) =>{
@@ -8,7 +8,7 @@ const newTask = async (task: Task) =>{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+localStorage.getItem('access_token'),
+            'Authorization': `Bearer ${get('access_token')}`,
             'userId': get('user').id
         },
         body: JSON.stringify(task)
@@ -19,20 +19,38 @@ const newTask = async (task: Task) =>{
 }
 
 const getTasks = async () => {
-    return await fetch('http://localhost:3000/api/v1/task', {headers: {'Authorization': 'Bearer '+localStorage.getItem('access_token')}}).then(res => res.json()).then(data => data)
+    return await fetch('http://localhost:3000/api/v1/task', {headers: {'Authorization': `Bearer ${get('access_token')}`,}}).then(res => res.json()).then(data => data)
+}
+
+const getTask = async (taskId: number) => {
+    return await fetch('http://localhost:3000/api/v1/task/'+taskId, {headers: {'Authorization': `Bearer ${get('access_token')}`}}).then(res => res.json()).then(data => data)
 }
 
 const deleteTask = async (id: number) => {
     return await fetch(`http://localhost:3000/api/v1/task/${id}`, {
         method: 'DELETE',
         headers: {
-            'Authorization': 'Bearer '+localStorage.getItem('access_token')
+            'Authorization': `Bearer ${get('access_token')}`,
         }
     })
+}
+
+const updateTask = async (task: Task) => {
+    return await fetch(`http://localhost:3000/api/v1/task/${task.id}`,
+        {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${get('access_token')}`
+            },
+            body: JSON.stringify({task})
+        }
+    )
 }
 
 export {
     newTask,
     getTasks,
-    deleteTask
+    getTask,
+    deleteTask,
+    updateTask
 }

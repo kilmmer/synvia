@@ -3,7 +3,7 @@ import { Alert, Box, Button, Collapse, FormControl, Grid, IconButton, Input, Inp
 import {  useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { login, refreshToken } from "../../services/auth.service"
-import { set } from "../../services/localstorage.service"
+import { set } from "../../services/storage.service"
 // import { Context } from "../../context/context"
 
 
@@ -11,7 +11,7 @@ const Login = () => {
     const navigate = useNavigate()
     const [formError, setFormError] = useState<boolean>(false)
     const [requestError, setRequestError] = useState<boolean>(false)
-    const [loginError, setLoginError] = useState()
+    const [loginError, setLoginError] = useState({message: ""})
     
     // const { setContext } = useContext(Context)
 

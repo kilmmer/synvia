@@ -15,6 +15,7 @@ import { register } from "../../services/auth.service"
 import { useNavigate } from 'react-router-dom';
 // import { Context } from '../../context/context';
 import { Close } from '@mui/icons-material';
+import { set } from '../../services/storage.service';
 
 const defaultTheme = createTheme();
 
@@ -40,16 +41,17 @@ export default function Register() {
     console.log(formData)
 
     const result = await register(formData);
-    console.log(result)
+    
     if(!result || result.access_token === undefined){
-      console.log(result)
       setRequestError(true)
       setRegisterResult(result)
       return
     }
     
-    localStorage.setItem('access_token', result.access_token);
-    localStorage.setItem('user', JSON.stringify(result));
+    set('access_token', result.access_token);
+    set('user', JSON.stringify(result));
+    set('isLoggedIn', 'true')
+
     // setContext({...context, user:result, isLoggetIn: true})
     navigate("/dashboard")
   };

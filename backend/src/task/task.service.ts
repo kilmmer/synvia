@@ -1,57 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { TaskEntity } from './entities/task.entity';
+import { InjectClient } from 'nest-postgres';
+import { Client } from 'pg';
+import { TaskStatus } from './entities';
 
 @Injectable()
 export class TaskService {
-    private task = [];
+    constructor(@InjectClient() private readonly db: Client) {}
 
-    create(createTaskDto: CreateTaskDto) {
-        if (this.task.length === 0) {
-            createTaskDto.id = 1;
-        } else {
-            createTaskDto.id = this.task[this.task.length - 1]?.id + 1;
-        }
-        createTaskDto.createdAt = new Date();
-        this.task.push(createTaskDto);
+    async create(createTaskDto: CreateTaskDto) {
+        const result = await this.db.query(
+            `INSERT INTO tasks (title, description, userId, tags, status, createdAt) VALUES ($1, $2, $3, $4, $5, now()) RETURNING *`,
+            [
+                createTaskDto.title,
+                createTaskDto.description,
+                createTaskDto.userId,
+                [createTaskDto.tags],
+                TaskStatus.TODO,
+            ],
+        );
 
-        return createTaskDto;
+        return result.rows[0];
     }
 
-    findAll() {
-        return this.task;
+    async findAll() {
+        const result = await this.db.query('SELECT * FROM tasks');
+        console.log(result.rows);
+        return result.rows;
     }
 
-    findOne(id: number) {
-        const task = this.task.find((task: TaskEntity) => task.id === id);
-        return task;
+    async findOne(id: number) {
+        const result = await this.db.query('SELECT * FROM tasks WHERE id = $1', [id]);
+        return result.rows[0];
     }
 
-    findByUserId(userId: number) {
-        const tasks = this.task.filter((task: TaskEntity) => task.userId === userId);
-        return tasks;
+    async findByUserId(userId: number) {
+        const result = await this.db.query('SELECT * FROM tasks WHERE user_id = $1', [userId]);
+        return result.rows;
     }
 
-    update(id: number, updateTaskDto: UpdateTaskDto) {
-        const task = this.task.find((task) => task.id === id);
-        const taskIndex = this.task.findIndex((task) => task.id === id);
-
-        if (task.length === 0) {
-            return null;
-        }
-
-        this.task[taskIndex] = {
-            ...this.task[taskIndex],
-            ...updateTaskDto,
-        };
-
-        return this.task[taskIndex];
+    async update(id: number, updateTaskDto: UpdateTaskDto) {
+        const result = await this.db.query(`UPDATE tasks SET title = $1, description = $2 WHERE id = $3 RETURNING *`, [
+            updateTaskDto.title,
+            updateTaskDto.description,
+            id,
+        ]);
+        return result.rows[0];
     }
 
-    remove(id: number) {
-        const index = this.task.findIndex((task) => task.id === id);
-        this.task.splice(index, 1);
-        return this.task;
+    async remove(id: number) {
+        const result = await this.db.query('DELETE FROM tasks WHERE id = $1', [id]);
+        return result.rows[0];
     }
 }

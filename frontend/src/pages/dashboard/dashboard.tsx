@@ -7,7 +7,7 @@ import './dashboard.css'
 import { logout } from "../../services/auth.service";
 import { useNavigate } from "react-router-dom";
 import { newTask } from "../../services/task.service";
-import { get } from "../../services/localstorage.service";
+import { get } from "../../services/storage.service";
 
 const Dashboard = () => {
     const [tasks, setTasks] = useState<Array<Task>>([]);
@@ -19,8 +19,9 @@ const Dashboard = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        const user = localStorage.getItem('user');
-        const token = localStorage.getItem('access_token');
+        const user = get('user');
+        const token = get('access_token');
+        
         if (!user || !token) {
             logout()
             navigate("/login")
@@ -32,25 +33,25 @@ const Dashboard = () => {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
+                'Authorization': `Bearer ${get('access_token')}`,
                 'userId': user !== null ? JSON.parse(user).id : ''
             },
         })
             .then((response) => response.json())
-            .then((data) => setTasks(data));
+            .then((result) => setTasks(result.data));
             
         fetch('http://localhost:3000/api/v1/user', {
             method: 'GET',
             headers: {
-                'Authorization': 'Bearer '+get('access_token')
+                'Authorization': `Bearer ${get('access_token')}`
             }
         }).then(r => r.json())
         .then(res => {
             if(res.message){
                 return false;
             }
-            res.map(user => {return {label: user.name, id: user.id}})
-            setUsers(res)
+            res.data.map(user => {return {label: user.name, id: user.id}})
+            setUsers(res.data)
         })
     }, [])
 
@@ -96,7 +97,7 @@ const Dashboard = () => {
                     </div>
 
                     {showModal && 
-                    <Modal title="Create new task" description={''} isOpen={showModal} closeModal={() => setShowModal(false)}  handleData={handleData}>
+                    <Modal title="Create new task" description={''} isOpen={showModal} closeModal={() => setShowModal(false)} handleData={handleData}>
                         <Box>
                             <TextField
                                 autoFocus
@@ -170,10 +171,10 @@ const Dashboard = () => {
                             <Autocomplete
                                 disablePortal
                                 id="combo-box-demo"
-                                options={users.map(user => {return {label: user.name, id: user.id}})}
+                                options={users.map((user: {name: string, id: number}) => {return {label: user.name, id: user.id}})}
                                 sx={{ width: '100%' }}
                                 
-                                renderInput={(params) => {console.log(params); return <TextField {...params} variant="standard" name="user" style={{marginTop: 5, width: "100%"}} label="Users" />}}
+                                renderInput={(params) => {return <TextField {...params} variant="standard" name="user" style={{marginTop: 5, width: "100%"}} label="Users" />}}
                                 />
                         </Box>
                     </Modal>

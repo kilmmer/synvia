@@ -1,0 +1,23 @@
+version: "3.8"
+
+networks:
+  mynet:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: synvia_pg
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres1q2w3e
+      POSTGRES_DB: synvia
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mynet
+
+volumes:
+  postgres_data:

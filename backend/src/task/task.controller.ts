@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpStatus } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -11,37 +11,70 @@ export class TaskController {
     constructor(private readonly taskService: TaskService) {}
 
     @Post()
-    create(@Body() createTaskDto: CreateTaskDto) {
-        return this.taskService.create(createTaskDto);
+    async create(@Body() createTaskDto: CreateTaskDto) {
+        return await this.taskService.create(createTaskDto);
     }
 
     @Get()
-    findAll() {
-        return this.taskService.findAll();
+    async findAll() {
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Success',
+            data: await this.taskService.findAll(),
+        };
+    }
+
+    @Get('/user/:userId')
+    async findAllByUser(@Param() userId: string) {
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Success',
+            data: await this.taskService.findByUserId(+userId),
+        };
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.taskService.findOne(+id);
+    async findOne(@Param('id') id: string) {
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Success',
+            data: await this.taskService.findOne(+id),
+        };
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-        return this.taskService.update(+id, updateTaskDto);
+    async update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Success',
+            data: await this.taskService.update(+id, updateTaskDto),
+        };
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.taskService.remove(+id);
+    async remove(@Param('id') id: string) {
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Success',
+            data: await this.taskService.remove(+id),
+        };
     }
 
     @Patch(':id/done')
-    done(@Param('id') id: string) {
-        return this.taskService.update(+id, { status: TaskStatus.DONE });
+    async done(@Param('id') id: string) {
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Success',
+            data: await this.taskService.update(+id, { status: TaskStatus.DONE }),
+        };
     }
 
     @Patch(':id/in-progress')
-    inProgress(@Param('id') id: string) {
-        return this.taskService.update(+id, { status: TaskStatus.IN_PROGRESS });
+    async inProgress(@Param('id') id: string) {
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Success',
+            data: await this.taskService.update(+id, { status: TaskStatus.IN_PROGRESS }),
+        };
     }
 }

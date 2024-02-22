@@ -13,39 +13,59 @@ export class AuthController {
 
     @Post('login')
     async login(@Body() loginUserDto: Pick<User, 'email' | 'password'>) {
-        console.log(loginUserDto);
         const user = await this.authService.login(loginUserDto.email, loginUserDto.password);
-
-        console.log('18', user);
 
         if (!user || user.message) {
             throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
         }
 
-        return user;
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Login successful',
+            data: user,
+        };
     }
 
     @Post('register')
     async register(@Body() registerUserDto: CreateUserDto) {
-        const user = this.authService.register(registerUserDto);
+        const user = await this.authService.register(registerUserDto);
 
         if (!user || user['message']) {
             throw new HttpException(user['message'], HttpStatus.BAD_REQUEST);
         }
 
-        return user;
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Register successful',
+            data: user,
+        };
     }
 
     @Post('refresh-token')
-    async refreshToken(@Body() body: { refreshToken: string }) {
-        console.log(body);
-        const { refreshToken } = body;
+    async refreshToken(@Body() body: { refresh_token: string }) {
+        const { refresh_token } = body;
 
-        return this.authService.refresh(refreshToken);
+        if (refresh_token === undefined) return new HttpException('Refresh token is required', HttpStatus.BAD_REQUEST);
+
+        const refresh = this.authService.refresh(refresh_token);
+
+        if (!refresh || refresh['message']) {
+            throw new HttpException(refresh['message'], HttpStatus.BAD_REQUEST);
+        }
+
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Refresh token successful',
+            data: refresh,
+        };
     }
 
     @Get('allusers')
     getUsers() {
-        return this.userService.findAll();
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Get users successful',
+            data: this.userService.findAll(),
+        };
     }
 }
